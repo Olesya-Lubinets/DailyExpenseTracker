@@ -7,29 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.delay
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-
 class ListFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,12 +30,19 @@ class ListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val expenseViewModel = (requireActivity() as MainActivity).expenseViewModel
-        val adapter = ExpenseAdapter()
+        val settingsViewModel: SettingsViewModel by activityViewModels()
+
+       var currentCurrency:Currency = Currency.EUR
+        val adapter = ExpenseAdapter(currentCurrency)
         recyclerView.adapter = adapter
 
 
         expenseViewModel.expensesLiveData.observe(viewLifecycleOwner) { expenses ->
             adapter.submitList(expenses)
+        }
+        settingsViewModel.currentCurrency.observe(viewLifecycleOwner) { currency ->
+            currentCurrency = currency
+            adapter.updateCurrency(currency)
         }
 
     }

@@ -12,7 +12,8 @@ import java.time.LocalDate
 
 class CategoryOfExpenseAdapter(
     val categories: List<CategoryOfExpense>,
-    val viewModel: ExpenseViewModel
+    val currentCurrency: Currency,
+    val expenses:List<Expense>
 ) :
     RecyclerView.Adapter<CategoryOfExpenseAdapter.CategoryOfExpenseViewHolder>() {
     class CategoryOfExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -37,12 +38,10 @@ class CategoryOfExpenseAdapter(
         holder.categoryOfExpense.text = currentCategoryOfExpense.title
         val currentMonth = LocalDate.now().month
         val sumPerMonth =
-            viewModel.calculateMonthSumByCategory(currentMonth, currentCategoryOfExpense)
-        holder.sumOfExpenses.text = formatPrintAmount(sumPerMonth)
+           Calculator.calculateMonthSumByCategory(expenses, currentMonth, currentCategoryOfExpense)
+        holder.sumOfExpenses.text = formatPrintAmount(sumPerMonth,currentCurrency)
         Glide.with(holder.itemView.context)
             .load(currentCategoryOfExpense.icon)
             .into(holder.imageCategory)
     }
-
-
 }

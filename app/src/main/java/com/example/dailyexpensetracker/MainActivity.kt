@@ -1,7 +1,9 @@
 package com.example.dailyexpensetracker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -19,31 +21,47 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this, viewModelFactory).get(ExpenseViewModel::class.java)
     }
 
+    val settingsViewModel: SettingsViewModel by lazy {
+        ViewModelProvider(this).get(SettingsViewModel::class.java)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHostFragment.navController
+
+        if (intent?.getBooleanExtra("open_add_expense", false) == true) {
+            navController.navigate(R.id.addExpenseFragment)
+        }
+    }
+
+
+
     @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        CurrentSettings.notificationStatus =
-            AppPreferences.getDataFromPreferences(this, "notifications", false)
-        CurrentSettings.currentCurrency = Currency.valueOf(
-            AppPreferences.getDataFromPreferences(this, "currency", "EUR")
-        )
-
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-
-
         val navController = navHostFragment.navController
+
         val btmAddExpense: Button = findViewById(R.id.bt_add_expense)
+
+        if (intent?.getBooleanExtra("open_add_expense", false) == true) {
+            navController.navigate(R.id.addExpenseFragment)
+        }
+        Log.d("MainActivity", "Intent extras: ${intent?.extras}")
+        Log.d("MainActivity", "open_add_expense = ${intent?.getBooleanExtra("open_add_expense", false)}")
 
         btmAddExpense.setOnClickListener {
             navController.navigate(R.id.addExpenseFragment)
         }
 
-        val navigation_bar = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
+        val bottomNavigationBar = findViewById<BottomNavigationView>(R.id.bottom_navigation_view)
 
-        navigation_bar.setOnItemSelectedListener {
+        bottomNavigationBar.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.stats_button -> {
                     navController.navigate(R.id.statsFragment)

@@ -1,5 +1,6 @@
 package com.example.dailyexpensetracker
 
-fun formatPrintAmount(amount:Int):String {
-    return amount.toString()+" "+CurrentSettings.currentCurrency.title
+
+fun formatPrintAmount(amount:Int,currency: Currency):String {
+    return amount.toString()+" "+ currency.title
 }

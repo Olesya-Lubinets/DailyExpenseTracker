@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
-class ExpenseAdapter : ListAdapter<Expense, ExpenseAdapter.ExpenseViewHolder>(DiffCallback()) {
+class ExpenseAdapter(private var currency: Currency) : ListAdapter<Expense, ExpenseAdapter.ExpenseViewHolder>(DiffCallback()) {
 
     class ExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val ivCategoryIcon: ImageView = view.findViewById(R.id.ivCategoryIcon)
@@ -28,13 +28,18 @@ class ExpenseAdapter : ListAdapter<Expense, ExpenseAdapter.ExpenseViewHolder>(Di
 
     override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
         val expense = getItem(position)
-        holder.tvAmount.text = formatPrintAmount(expense.amount)
+        holder.tvAmount.text = formatPrintAmount(expense.amount,currency)
         holder.tvDate.text = expense.date.toString()
         holder.tvDescription.text = expense.description
         holder.tvCategory.text = expense.category.title
         Glide.with(holder.itemView.context)
             .load(expense.category.icon)
             .into(holder.ivCategoryIcon)
+    }
+
+    fun updateCurrency(newCurrency: Currency) {
+        currency = newCurrency
+        notifyDataSetChanged()
     }
 
 
