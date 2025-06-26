@@ -1,5 +1,9 @@
 package com.example.dailyexpensetracker
 
+
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,12 +12,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.delay
+import android.content.Intent
+import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 
 class ListFragment : Fragment() {
+
+    val saveToStorageLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    SaverExpensesToFile.saveDataToCSV(requireContext(),uri)
+                    SaverExpensesToFile.shareFile(requireContext(),uri)
+                }
+            }
+        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,11 +55,27 @@ class ListFragment : Fragment() {
 
         expenseViewModel.expensesLiveData.observe(viewLifecycleOwner) { expenses ->
             adapter.submitList(expenses)
+            SaverExpensesToFile.updateListOfExpenses(expenses)
         }
         settingsViewModel.currentCurrency.observe(viewLifecycleOwner) { currency ->
             currentCurrency = currency
             adapter.updateCurrency(currency)
         }
 
+        val exportToFileButton = view.findViewById<Button>(R.id.exportToFileButton)
+
+        exportToFileButton.setOnClickListener {
+            val intent = Intent().apply {
+                action = Intent.ACTION_CREATE_DOCUMENT
+                addCategory(Intent.CATEGORY_OPENABLE)
+                putExtra(Intent.EXTRA_TITLE,"expenses.csv")
+                type = "text/csv"
+            }
+            saveToStorageLauncher.launch(intent)
+        }
+
     }
+
+
 }
+
