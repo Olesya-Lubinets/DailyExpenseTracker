@@ -1,10 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#BA55D3</color>
-    <color name="purple_500">#EE82EE</color>
-    <color name="purple_700">#DA70D6</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#FCD7DE</color>
+    <color name="colorPrimaryVariant">#F8B8C4</color>
+    <color name="colorSecondary">#FFD9E3</color>
+    <color name="statusBarColor">#F8B8C4</color>
+    <color name="navigationBarColor">#FCD7DE</color>
+    <color name="windowBackground">#FFF5F7</color>
+    <color name="buttonTextColor">#FFFFFF</color>
+    <color name="editTextBackground">#FFF0F4</color>
+    <color name="textPrimary">#333333</color>
+    <color name="accentColor">#DD3366</color>
+    <color name="textSecondary">#666666</color>
+    <color name="onPrimaryColor">#FCD7DE</color>
 </resources>

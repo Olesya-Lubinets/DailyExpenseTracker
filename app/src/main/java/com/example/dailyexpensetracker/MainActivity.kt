@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
 
-        val btmAddExpense: Button = findViewById(R.id.bt_add_expense)
+        val btmAddExpense: ImageButton = findViewById(R.id.bt_add_expense)
 
         if (intent?.getBooleanExtra("open_add_expense", false) == true) {
             navController.navigate(R.id.addExpenseFragment)

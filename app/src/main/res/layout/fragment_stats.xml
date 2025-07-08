@@ -1,44 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".StatsFragment">
+    android:background="@color/windowBackground"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvMonthSumTitle"
+        style="@style/HeadingText"
+        android:text="@string/label_sum_this_month"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="Sum this month:"
-        />
+        android:layout_height="wrap_content"/>
 
     <TextView
         android:id="@+id/tvMonthSum"
-        android:layout_width="wrap_content"
+        android:textColor="@color/accentColor"
+        android:textSize="20sp"
+        android:layout_marginBottom="16dp"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_dark" />/>
+        android:layout_width="wrap_content" />
 
     <TextView
         android:id="@+id/tvDayAverageTitle"
+        style="@style/HeadingText"
+        android:text="@string/label_day_average_this_month"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="Day avarage this month:"
-        />
+        android:layout_height="wrap_content"/>/>
 
     <TextView
         android:id="@+id/tvDayAverage"
-        android:layout_width="wrap_content"
+        android:textColor="@color/accentColor"
+        android:textSize="20sp"
+        android:layout_marginBottom="16dp"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_dark" />/>
-
+        android:layout_width="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/statistics_by_categories_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
 </LinearLayout>

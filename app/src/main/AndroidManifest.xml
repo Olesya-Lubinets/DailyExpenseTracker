@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
 
+
     <application
 
         android:allowBackup="true"
@@ -22,9 +23,10 @@
             android:exported="false"
             android:label="@string/title_activity_main"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.DailyExpenseTracker" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".Splash"
+            android:theme="@style/AppTheme"
             android:exported="true"
             android:label="@string/title_activity_splash">
             <intent-filter>

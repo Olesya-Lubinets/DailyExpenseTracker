@@ -1,0 +1,52 @@
+<resources>
+
+    <!-- Primary styled button -->
+    <style name="PrimaryButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/colorPrimaryVariant</item>
+        <item name="android:textColor">@color/buttonTextColor</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+    <!-- Secondary (outlined) button -->
+    <style name="SecondaryButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:backgroundTint">@color/onPrimaryColor</item>
+        <item name="android:textColor">@color/colorPrimaryVariant</item>
+        <item name="strokeColor">@color/colorPrimaryVariant</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- EditText consistent appearance -->
+    <style name="StyledEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:backgroundTint">@color/editTextBackground</item>
+        <item name="android:textColor">@color/textPrimary</item>
+        <item name="android:padding">12dp</item>
+    </style>
+
+    <!-- Headings (titles, section headers) -->
+    <style name="HeadingText" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">@color/accentColor</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Secondary or smaller text -->
+    <style name="SubText" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
+
+    <!-- General layout container card style -->
+    <style name="CardContainer">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="contentPadding">12dp</item>
+        <item name="cardBackgroundColor">@color/windowBackground</item>
+    </style>
+
+    <!-- General ImageView icon size style -->
+    <style name="IconStyle">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginEnd">12dp</item>
+    </style>
+
+</resources>

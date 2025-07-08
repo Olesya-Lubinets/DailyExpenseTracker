@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    android:background="@color/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,15 +16,12 @@
         android:padding="12dp"
         android:gravity="center_vertical">
 
-        <!-- Icon -->
         <ImageView
             android:id="@+id/ivCategoryIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginEnd="12dp"
-             />
+            android:layout_marginEnd="12dp" />
 
-        <!-- Text Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -33,21 +32,18 @@
                 android:id="@+id/tvDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Groceries"
                 android:textStyle="bold"
                 android:textSize="16sp"
-                android:textColor="@android:color/black" />
+                android:textColor="@color/textPrimary" />
 
             <TextView
                 android:id="@+id/tvCategory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Food"
                 android:textSize="14sp"
-                android:textColor="#666" />
+                android:textColor="@color/textSecondary" />
         </LinearLayout>
 
-        <!-- Right Column: Amount + Date -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -58,18 +54,16 @@
                 android:id="@+id/tvAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="$50"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/holo_red_dark" />
+                android:textColor="@color/accentColor" />
 
             <TextView
                 android:id="@+id/tvDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2025-05-08"
                 android:textSize="12sp"
-                android:textColor="#888" />
+                android:textColor="@color/textSecondary" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
