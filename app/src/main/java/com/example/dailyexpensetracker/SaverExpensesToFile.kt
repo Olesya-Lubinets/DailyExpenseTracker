@@ -16,6 +16,7 @@ object SaverExpensesToFile {
     }
 
     private fun generateCSVFromData(): String {
+        //TODO: I thought there should be a lib for that, but manual is ok for that case
         val sb = StringBuilder()
         sb.append("Date,Amount,Category,Description\n")
         listOfExpenses.forEach {
@@ -43,6 +44,7 @@ object SaverExpensesToFile {
         val intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, pathToFile)
+            //todo: remove comments
             //addCategory(Intent.CATEGORY_APP_MESSAGING)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             //addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

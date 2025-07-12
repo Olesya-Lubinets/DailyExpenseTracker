@@ -1,4 +1,6 @@
+//TODO: there is mutli-purpose package!
 package com.example.dailyexpensetracker
+
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -25,7 +27,7 @@ import java.time.LocalDate
 
 
 class AddExpenseFragment : Fragment() {
-
+    //TODO: Pay attention to extra empty lines. It important to get rid of them, but keep balance
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,17 +37,20 @@ class AddExpenseFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_add_expense, container, false)
     }
 
-    // remove all this annotations
-    @RequiresApi(Build.VERSION_CODES.O)
+    // TODO: This method is 160 lines. Normal methods usually 20 lines max and they do one thing.
+    // extract steps to separate methods and private classes with self explanatory names
+    // - spinnerAdapter, OnItemSelectedListener, method for building datePicker,
+    // method for building imageCalendar and so on
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        val spinnerAdapter = object : ArrayAdapter<CategoryOfExpense?>(
+        // TODO: Separate private class
+        val spinnerAdapter = object : ArrayAdapter<CategoryOfExpense?>( // TODO: Extract it to separate class
             requireContext(),
             android.R.layout.simple_spinner_item,
-            listOf(null) + CategoryOfExpense.entries
+            listOf(null) + CategoryOfExpense.entries //TODO: why null in the list and non-null enum???
         ) {
+            //TODO: Why getView and getDropDownView are the same?
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 return createCustomView(
                     position,
@@ -74,11 +79,11 @@ class AddExpenseFragment : Fragment() {
                 parent: ViewGroup,
                 layoutId: Int
             ): View {
-                val view =
-                    convertView ?: LayoutInflater.from(context).inflate(layoutId, parent, false)
+                // TODO: Pay attention to var shadowing - ideally they should not overlap - better readability
+                val view = convertView ?: LayoutInflater.from(context).inflate(layoutId, parent, false)
                 val textView = view.findViewById<TextView>(android.R.id.text1)
                 val item = getItem(position)
-                textView?.text = item?.title ?: "Select category"
+                textView?.text = item?.title ?: "Select category" // TODO: Put it into i18n file
                 return view
             }
         }
@@ -87,6 +92,7 @@ class AddExpenseFragment : Fragment() {
         val spinnerCategory: Spinner = view.findViewById(R.id.spinnerCategory)
         spinnerCategory.adapter = spinnerAdapter
 
+        // TODO: Separate private class
         val ivCategoryIconPreview: ImageView = view.findViewById(R.id.ivCategoryIconPreview)
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -95,6 +101,7 @@ class AddExpenseFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
+                //TODO: tmp is not advised usually
                 val temp = spinnerCategory.selectedItem as? CategoryOfExpense
                 val icon = temp?.icon ?: R.drawable.default_category
                 showIconOfCategory(icon, ivCategoryIconPreview)
@@ -103,6 +110,7 @@ class AddExpenseFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
+        // TODO: Separate private class
         val myCalendar = Calendar.getInstance()
 
         val etDate: EditText = view.findViewById(R.id.etDate)
@@ -111,7 +119,7 @@ class AddExpenseFragment : Fragment() {
             myCalendar.set(Calendar.YEAR, year)
             myCalendar.set(Calendar.MONTH, month)
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            val date: LocalDate = LocalDate.of(year, month + 1, dayOfMonth)
+            val date: LocalDate = LocalDate.of(year, month + 1, dayOfMonth) //TODO: Unhandled warning
             etDate.setText("$date")
         }
 
@@ -130,9 +138,12 @@ class AddExpenseFragment : Fragment() {
         val etAmount: EditText = view.findViewById(R.id.etAmount)
 
         val btnSaveExpense: Button = view.findViewById(R.id.btnSaveExpense)
+        // TODO: Separate private method
         btnSaveExpense.setOnClickListener {
 
             val currentDescription: String = etDescription.text.toString()
+            //TODO: From UX point it is better to highlight all errors on the screen,
+            // not one by one, but here it is a nitpicking
             if (currentDescription.isBlank()) {
                 etDescription.error = "Enter a description"
                 return@setOnClickListener
@@ -143,11 +154,11 @@ class AddExpenseFragment : Fragment() {
             }
             val currentDate: LocalDate = LocalDate.of(
                 myCalendar.get(Calendar.YEAR),
-                myCalendar.get(Calendar.MONTH) + 1,
+                myCalendar.get(Calendar.MONTH) + 1, //TODO: Why +1?
                 myCalendar.get(Calendar.DAY_OF_MONTH)
             )
 
-            val currentAmount = etAmount.text.toString().toIntOrNull() ?: run {
+            val currentAmount = etAmount.text.toString().toIntOrNull() ?: run { //TODO: Cool fancy run! GJ
                 etAmount.error = "Enter a valid amount"
                 return@setOnClickListener
             }
@@ -157,31 +168,30 @@ class AddExpenseFragment : Fragment() {
                 return@setOnClickListener
             }
             val currentCategory: CategoryOfExpense =
-                spinnerCategory.selectedItem as CategoryOfExpense
+                spinnerCategory.selectedItem as CategoryOfExpense //TODO: non-null cast could lead to exception
 
             val currentExpense =
                 Expense(currentAmount, currentDescription, currentDate, currentCategory)
-
 
             val expenseViewModel = (requireActivity() as MainActivity).expenseViewModel
             expenseViewModel.addExpense(currentExpense)
             Toast.makeText(context, "Expense successfully added", Toast.LENGTH_SHORT).show()
             findNavController().navigateUp()
-
         }
-
-        val btnCancel: Button = view.findViewById(R.id.btnCancel)
+        // TODO: Separate private method
+        val btnCancel: Button = view.findViewById(R.id.btnCancel) //TODO: btnCancel -> cancelBtn is more common in Kotlin
         btnCancel.setOnClickListener {
             val currentDescription = etDescription.text.toString()
             val currentDateText = etDate.text.toString()
             val currentAmount = etAmount.text.toString()
-            if (checkIfAnyDataInserted(currentAmount, currentDateText, currentDescription)) {
+            if (checkIfAnyDataInserted(currentAmount, currentDateText, currentDescription)) { // TODO: use guarding ifs -> add return after showCancelDialog()
                 showCancelDialog()
             } else findNavController().navigateUp()
         }
 
     }
 
+    // TODO: private
     fun showIconOfCategory(iconPath: Int, imageView: ImageView) {
         Glide.with(requireContext())
             .load(iconPath)
@@ -201,6 +211,8 @@ class AddExpenseFragment : Fragment() {
     }
 }
 
+//TODO: Why this method out of the class above?
+// I'm not sure, but probably file signleton class will be created for this method. And we can avoid that.
 private fun checkIfAnyDataInserted(amount: String, dateText: String, description: String)
         : Boolean {
     return (amount.isNotBlank() || dateText.isNotBlank() || description.isNotBlank())

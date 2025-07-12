@@ -19,10 +19,10 @@ import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 
 class ListFragment : Fragment() {
-
+    //TODO: privte
     val saveToStorageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (result.resultCode == Activity.RESULT_OK) { // guard if
                 result.data?.data?.let { uri ->
                     SaverExpensesToFile.saveDataToCSV(requireContext(),uri)
                     SaverExpensesToFile.shareFile(requireContext(),uri)
@@ -42,6 +42,8 @@ class ListFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //TODO: probably separate method for observers
         val recyclerView: RecyclerView = view.findViewById(R.id.expenses_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -62,8 +64,8 @@ class ListFragment : Fragment() {
             adapter.updateCurrency(currency)
         }
 
+        //todo: separate method
         val exportToFileButton = view.findViewById<Button>(R.id.exportToFileButton)
-
         exportToFileButton.setOnClickListener {
             val intent = Intent().apply {
                 action = Intent.ACTION_CREATE_DOCUMENT
@@ -75,7 +77,7 @@ class ListFragment : Fragment() {
         }
 
     }
-
+//todo: extra empty lines
 
 }
 

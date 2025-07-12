@@ -24,7 +24,7 @@ class SettingsFragment : Fragment() {
 
     val notificationsPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
+            if (granted) { //todo: guard if
                 Toast.makeText(
                     context,
                     "Notification permission granted",
@@ -43,7 +43,7 @@ class SettingsFragment : Fragment() {
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+//todo: empty lines
 
         super.onViewCreated(view, savedInstanceState)
 
@@ -65,7 +65,7 @@ class SettingsFragment : Fragment() {
             currencySpinner.setSelection(position)
         }
 
-
+        //todo: separate class
         currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -88,12 +88,13 @@ class SettingsFragment : Fragment() {
         val isEnabled = AppPreferences.getDataFromPreferences(requireContext(),"notifications", false)
         notificationSwitcher.isChecked = isEnabled
 
+        //todo: separate method
         notificationSwitcher.setOnCheckedChangeListener { _, isChecked ->
             val message = if (isChecked) "Notifications are on" else "Notifications are off"
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             settingsViewModel.setNotificationStatus(requireContext(), isChecked)
 
-            if (isChecked) {
+            if (isChecked) { //todo: guard ifs
                 checkNotificationPermission()
                 if (ContextCompat.checkSelfPermission(requireContext(), POST_NOTIFICATIONS) ==
                     PackageManager.PERMISSION_GRANTED) {
@@ -109,15 +110,17 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    // todo: private
     fun  checkNotificationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), POST_NOTIFICATIONS) ==
             PackageManager.PERMISSION_DENIED
         ) {
-            when {
+            when { // todo: guard if -> not when because there are only two branches
                 ActivityCompat.shouldShowRequestPermissionRationale(
                     requireActivity(),
                     POST_NOTIFICATIONS
                 ) -> {
+                    //todo: separate method
                     AlertDialog.Builder(context)
                         .setTitle("Notifications permission required")
                         .setMessage("This app needs permission to send you notifications.")

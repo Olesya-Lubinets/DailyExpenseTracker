@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
-
+//TODO: remove extra empty lines
 
 
 
@@ -16,7 +16,7 @@ class  BootReceiver : BroadcastReceiver() {
         Log.d("BootReceiver", "Received intent: ${intent.action}")
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             val notificationsEnabled = AppPreferences.getDataFromPreferences(context, "notifications", false)
-            if (notificationsEnabled) {
+            if (notificationsEnabled) { //TODO: Guarding ifs
                 if (ContextCompat.checkSelfPermission(context, POST_NOTIFICATIONS) ==
                         PackageManager.PERMISSION_GRANTED) {
                     ReminderScheduler.scheduleDailyReminder(

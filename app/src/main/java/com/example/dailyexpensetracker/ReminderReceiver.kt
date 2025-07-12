@@ -16,6 +16,7 @@ class ReminderReceiver : BroadcastReceiver() {
         NotificationSender.sendReminder(context)
 
         // Schedule the next day
+        //TODO: Separate method getNextDayCalendar()?
         val calendar = Calendar.getInstance().apply {
             add(Calendar.DAY_OF_YEAR, 1)
             set(Calendar.HOUR_OF_DAY, ReminderConfig.HOUR)

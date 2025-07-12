@@ -9,14 +9,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import java.time.LocalDate
-
-class CategoryOfExpenseAdapter(
+//no extra empty lines GJ!
+//TODO: ExpenseCategoryAdapter probably better name -> without of
+internal class CategoryOfExpenseAdapter(
+    //TODO: all members can be private
     val categories: List<CategoryOfExpense>,
     val currentCurrency: Currency,
     val expenses:List<Expense>
 ) :
+//TODO: no indent for inner elements -> enable autoformat
     RecyclerView.Adapter<CategoryOfExpenseAdapter.CategoryOfExpenseViewHolder>() {
-    class CategoryOfExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        //Not sure that we need to expose this class. Add internal
+    internal inner class CategoryOfExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        //TODO: Do not expose full view when you need to change only text -> add specific methods for that and make vals private
         val imageCategory: ImageView = view.findViewById(R.id.imageCategory)
         val categoryOfExpense: TextView = view.findViewById(R.id.tvCategoryOfExpense)
         val sumOfExpenses: TextView = view.findViewById(R.id.sumForCategory)

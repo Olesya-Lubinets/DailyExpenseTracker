@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.room.TypeConverter
 import java.time.LocalDate
 
+//TODO: No usages
 class Converters {
 
     @TypeConverter
