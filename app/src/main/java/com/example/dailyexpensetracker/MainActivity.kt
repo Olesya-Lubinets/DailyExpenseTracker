@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this, viewModelFactory).get(ExpenseViewModel::class.java)
     }
 
+    //TODO: remove what is not used
     val settingsViewModel: SettingsViewModel by lazy {
         ViewModelProvider(this).get(SettingsViewModel::class.java)
     }

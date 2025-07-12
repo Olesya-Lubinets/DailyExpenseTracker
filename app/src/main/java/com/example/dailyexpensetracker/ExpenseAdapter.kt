@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
+//TODO: internal
 class ExpenseAdapter(private var currency: Currency) : ListAdapter<Expense, ExpenseAdapter.ExpenseViewHolder>(DiffCallback()) {
 
     class ExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -39,12 +40,14 @@ class ExpenseAdapter(private var currency: Currency) : ListAdapter<Expense, Expe
 
     fun updateCurrency(newCurrency: Currency) {
         currency = newCurrency
+        //TODO: Last resort, is there something more specific?
         notifyDataSetChanged()
     }
 
 
     class DiffCallback : DiffUtil.ItemCallback<Expense>() {
         override fun areItemsTheSame(oldItem: Expense, newItem: Expense) = oldItem.id == newItem.id
+        //TODO: It seems that it compares ID here too (because Expense is data class), if it is intended then ok, if not better to fix
         override fun areContentsTheSame(oldItem: Expense, newItem: Expense) = oldItem == newItem
     }
 }
