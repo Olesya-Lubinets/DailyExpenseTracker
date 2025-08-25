@@ -15,15 +15,18 @@ class ReminderReceiver : BroadcastReceiver() {
 
         NotificationSender.sendReminder(context)
 
-        // Schedule the next day
-        val calendar = Calendar.getInstance().apply {
-            add(Calendar.DAY_OF_YEAR, 1)
-            set(Calendar.HOUR_OF_DAY, ReminderConfig.HOUR)
-            set(Calendar.MINUTE, ReminderConfig.MIN)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-
+        val calendar = getNextDayCalendar()
         ReminderScheduler.scheduleExactReminder(context, calendar)
     }
+}
+
+fun getNextDayCalendar(): Calendar {
+    val calendar = Calendar.getInstance().apply {
+        add(Calendar.DAY_OF_YEAR, 1)
+        set(Calendar.HOUR_OF_DAY, ReminderConfig.HOUR)
+        set(Calendar.MINUTE, ReminderConfig.MIN)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    return calendar
 }

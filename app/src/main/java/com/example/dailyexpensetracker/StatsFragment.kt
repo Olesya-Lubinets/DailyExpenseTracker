@@ -2,65 +2,65 @@ package com.example.dailyexpensetracker
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.dailyexpensetracker.databinding.FragmentStatsBinding
 import java.time.LocalDate
 
-
 class StatsFragment : Fragment() {
-    var allExpenses:List<Expense> = emptyList()
-    var currentCurrency:Currency = Currency.EUR
+    private var allExpenses: List<Expense> = emptyList()
+    private var currentCurrency: Currency = Currency.EUR
+
+    private var _binding: FragmentStatsBinding? = null
+    private val binding get() = _binding!!
+
+    private val settingsViewModel: SettingsViewModel by activityViewModels()
+    private lateinit var expenseViewModel: ExpenseViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_stats, container, false)
+    ): View {
+        _binding = FragmentStatsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    @SuppressLint("NewApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val expenseViewModel = (requireActivity() as MainActivity).expenseViewModel
-        val settingsViewModel: SettingsViewModel by activityViewModels()
-
-        val tvMonthSum: TextView = view.findViewById(R.id.tvMonthSum)
-        val tvDayAverage: TextView = view.findViewById(R.id.tvDayAverage)
-        val statisticsByCategoryRecyclerView =
-            view.findViewById<RecyclerView>(R.id.statistics_by_categories_recycler_view)
-
-        statisticsByCategoryRecyclerView.layoutManager = LinearLayoutManager(context)
+        expenseViewModel = (requireActivity() as MainActivity).expenseViewModel
+        binding.statisticsByCategoriesRecyclerView.layoutManager = LinearLayoutManager(context)
 
         expenseViewModel.expensesLiveData.observe(viewLifecycleOwner) { expenses ->
             allExpenses = expenses
-            updateUI(tvMonthSum,tvDayAverage, statisticsByCategoryRecyclerView)
+            updateUI(binding.statisticsByCategoriesRecyclerView)
         }
         settingsViewModel.currentCurrency.observe(viewLifecycleOwner) { currency ->
             currentCurrency = currency
-            updateUI(tvMonthSum,tvDayAverage, statisticsByCategoryRecyclerView)
+            updateUI(binding.statisticsByCategoriesRecyclerView)
         }
     }
 
     @SuppressLint("NewApi")
-    fun updateUI(tvMonthSum:TextView, tvDayAverage:TextView, recyclerView: RecyclerView) {
-
-        val monthSum = Calculator.calculateMonthSum(allExpenses,LocalDate.now().month)
-        val averagePerDay = Calculator.calculateAveragePerDay(allExpenses,LocalDate.now().month)
-        tvMonthSum.text = formatPrintAmount(monthSum, currentCurrency)
-        tvDayAverage.text = formatPrintAmount(averagePerDay,currentCurrency)
+    private fun updateUI(recyclerView: RecyclerView) {
+        val monthSum = Calculator.calculateMonthSum(allExpenses, LocalDate.now().month)
+        val averagePerDay = Calculator.calculateAveragePerDay(allExpenses, LocalDate.now().month)
+        binding.tvMonthSum.text = monthSum.formatWithCurrency(currentCurrency)
+        binding.tvDayAverage.text = averagePerDay.formatWithCurrency(currentCurrency)
 
         recyclerView.adapter =
-            CategoryOfExpenseAdapter(CategoryOfExpense.entries, currentCurrency,allExpenses)
+            ExpenseCategoryAdapter(ExpenseCategory.entries, currentCurrency, allExpenses)
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
 
 

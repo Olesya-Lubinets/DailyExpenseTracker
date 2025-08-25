@@ -14,8 +14,8 @@ class Converters {
     fun toLocalDate(dateString: String): LocalDate = LocalDate.parse(dateString)
 
     @TypeConverter
-    fun fromCategory(category: CategoryOfExpense): String = category.name
+    fun fromCategory(category: ExpenseCategory): String = category.name
 
     @TypeConverter
-    fun toCategory(name: String): CategoryOfExpense = CategoryOfExpense.valueOf(name)
+    fun toCategory(name: String): ExpenseCategory = ExpenseCategory.valueOf(name)
 }

@@ -7,7 +7,6 @@ import android.content.Intent
 import android.util.Log
 import java.util.Calendar
 
-
 object ReminderConfig {
     const val HOUR = 21
     const val MIN = 13

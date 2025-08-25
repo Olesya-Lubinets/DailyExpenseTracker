@@ -1,12 +1,10 @@
 package com.example.dailyexpensetracker
 
-
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-
 
 @Database(entities = [Expense::class], version = 1)
 @TypeConverters(Converters::class)
@@ -21,7 +19,7 @@ abstract class AppDatabase : RoomDatabase() {
                 Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "app_database"   // name of database
+                    "app_database"
                 ).build().also { INSTANCE = it }
             }
         }

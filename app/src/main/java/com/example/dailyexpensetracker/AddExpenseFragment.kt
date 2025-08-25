@@ -1,8 +1,8 @@
 package com.example.dailyexpensetracker
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,198 +11,217 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.dailyexpensetracker.databinding.FragmentAddExpenseBinding
+
 
 import java.time.LocalDate
 
-
 class AddExpenseFragment : Fragment() {
 
+    private var selectedDate: LocalDate? = null
+
+    private var _binding: FragmentAddExpenseBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_expense, container, false)
+        _binding = FragmentAddExpenseBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    // remove all this annotations
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupDatePicker()
+        setupExpenseSpinner()
+        setupSaveButton()
+        setupCancelButton()
+    }
 
-        val spinnerAdapter = object : ArrayAdapter<CategoryOfExpense?>(
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    @SuppressLint("NewApi")
+    private fun setupDatePicker() {
+        val datePicker = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+            selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+            binding.etDate.setText("$selectedDate")
+        }
+
+        val today = LocalDate.now()
+        binding.imageCalendar.setOnClickListener {
+            val date = selectedDate ?: today
+            showDatePickerDialog(datePicker, date)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun showDatePickerDialog(
+        datePicker: DatePickerDialog.OnDateSetListener,
+        date: LocalDate
+    ) {
+        DatePickerDialog(
+            requireContext(),
+            datePicker,
+            date.year,
+            date.monthValue - 1,
+            date.dayOfMonth
+        ).show()
+    }
+
+    private fun setupExpenseSpinner() {
+        val spinnerAdapter = setupSpinnerAdapter()
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinnerCategory.adapter = spinnerAdapter
+
+        setupSpinnerCategorySelectionListener()
+    }
+
+    private fun setupSpinnerAdapter(): ArrayAdapter<ExpenseCategory?> {
+        val spinnerAdapter = object : ArrayAdapter<ExpenseCategory?>(
             requireContext(),
             android.R.layout.simple_spinner_item,
-            listOf(null) + CategoryOfExpense.entries
+            listOf(null) + ExpenseCategory.entries
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 return createCustomView(
-                    position,
-                    convertView,
-                    parent,
-                    android.R.layout.simple_spinner_dropdown_item
-                )
-            }
-
-            override fun getDropDownView(
-                position: Int,
-                convertView: View?,
-                parent: ViewGroup
-            ): View {
-                return createCustomView(
-                    position,
-                    convertView,
-                    parent,
-                    android.R.layout.simple_spinner_dropdown_item
+                    position, convertView, parent, android.R.layout.simple_spinner_dropdown_item
                 )
             }
 
             private fun createCustomView(
-                position: Int,
-                convertView: View?,
-                parent: ViewGroup,
-                layoutId: Int
+                position: Int, convertView: View?, parent: ViewGroup, layoutId: Int
             ): View {
-                val view =
-                    convertView ?: LayoutInflater.from(context).inflate(layoutId, parent, false)
-                val textView = view.findViewById<TextView>(android.R.id.text1)
+                val itemView =
+                    convertView ?: LayoutInflater.from(requireContext()).inflate(layoutId, parent, false)
+                val textView = itemView.findViewById<TextView>(android.R.id.text1)
                 val item = getItem(position)
-                textView?.text = item?.title ?: "Select category"
-                return view
+                textView?.text = item?.title ?: getString(R.string.select_category)
+                return itemView
             }
         }
+        return spinnerAdapter
+    }
 
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        val spinnerCategory: Spinner = view.findViewById(R.id.spinnerCategory)
-        spinnerCategory.adapter = spinnerAdapter
-
-        val ivCategoryIconPreview: ImageView = view.findViewById(R.id.ivCategoryIconPreview)
-        spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                val temp = spinnerCategory.selectedItem as? CategoryOfExpense
-                val icon = temp?.icon ?: R.drawable.default_category
-                showIconOfCategory(icon, ivCategoryIconPreview)
+    private fun setupSpinnerCategorySelectionListener() {
+        binding.spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long ) {
+                val selectedCategory =  binding.spinnerCategory.selectedItem as? ExpenseCategory
+                val icon = selectedCategory?.icon ?: R.drawable.default_category
+                showIconOfCategory(icon, binding.ivCategoryIconPreview)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
-
-        val myCalendar = Calendar.getInstance()
-
-        val etDate: EditText = view.findViewById(R.id.etDate)
-
-        val datePicker = DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-            myCalendar.set(Calendar.YEAR, year)
-            myCalendar.set(Calendar.MONTH, month)
-            myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-            val date: LocalDate = LocalDate.of(year, month + 1, dayOfMonth)
-            etDate.setText("$date")
-        }
-
-        val imageCalendar: ImageView = view.findViewById(R.id.imageCalendar)
-        imageCalendar.setOnClickListener {
-            DatePickerDialog(
-                requireContext(),
-                datePicker,
-                myCalendar.get(Calendar.YEAR),
-                myCalendar.get(Calendar.MONTH),
-                myCalendar.get(Calendar.DAY_OF_MONTH)
-            ).show()
-        }
-
-        val etDescription: EditText = view.findViewById(R.id.etDescription)
-        val etAmount: EditText = view.findViewById(R.id.etAmount)
-
-        val btnSaveExpense: Button = view.findViewById(R.id.btnSaveExpense)
-        btnSaveExpense.setOnClickListener {
-
-            val currentDescription: String = etDescription.text.toString()
-            if (currentDescription.isBlank()) {
-                etDescription.error = "Enter a description"
-                return@setOnClickListener
-            }
-            if (etDate.text.isNullOrBlank()) {
-                etDate.error = "Pick a date"
-                return@setOnClickListener
-            }
-            val currentDate: LocalDate = LocalDate.of(
-                myCalendar.get(Calendar.YEAR),
-                myCalendar.get(Calendar.MONTH) + 1,
-                myCalendar.get(Calendar.DAY_OF_MONTH)
-            )
-
-            val currentAmount = etAmount.text.toString().toIntOrNull() ?: run {
-                etAmount.error = "Enter a valid amount"
-                return@setOnClickListener
-            }
-
-            if (spinnerCategory.selectedItem == null) {
-                Toast.makeText(context, "Please select a category", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val currentCategory: CategoryOfExpense =
-                spinnerCategory.selectedItem as CategoryOfExpense
-
-            val currentExpense =
-                Expense(currentAmount, currentDescription, currentDate, currentCategory)
-
-
-            val expenseViewModel = (requireActivity() as MainActivity).expenseViewModel
-            expenseViewModel.addExpense(currentExpense)
-            Toast.makeText(context, "Expense successfully added", Toast.LENGTH_SHORT).show()
-            findNavController().navigateUp()
-
-        }
-
-        val btnCancel: Button = view.findViewById(R.id.btnCancel)
-        btnCancel.setOnClickListener {
-            val currentDescription = etDescription.text.toString()
-            val currentDateText = etDate.text.toString()
-            val currentAmount = etAmount.text.toString()
-            if (checkIfAnyDataInserted(currentAmount, currentDateText, currentDescription)) {
-                showCancelDialog()
-            } else findNavController().navigateUp()
-        }
-
     }
 
-    fun showIconOfCategory(iconPath: Int, imageView: ImageView) {
+    private fun showIconOfCategory(iconPath: Int, imageView: ImageView) {
         Glide.with(requireContext())
             .load(iconPath)
             .into(imageView)
     }
 
+    private fun setupCancelButton() {
+        binding.btnCancel.setOnClickListener {
+            if (!checkIfAnyDataInserted()) {
+                findNavController().navigateUp()
+                return@setOnClickListener
+            }
+            showCancelDialog()
+        }
+    }
+
+    private fun checkIfAnyDataInserted()
+            : Boolean {
+        val currentDescription = binding.etDescription.text.toString()
+        val currentDateText = binding.etDate.text.toString()
+        val currentAmount = binding.etAmount.text.toString()
+        return (currentAmount.isNotBlank() || currentDateText.isNotBlank() || currentDescription.isNotBlank())
+    }
 
     private fun showCancelDialog() {
-        AlertDialog.Builder(context)
-            .setTitle("Are you sure?")
-            .setMessage("All entered data will be missed.")
-            .setPositiveButton("Yes") { _, _ ->
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.sure))
+            .setMessage(getString(R.string.all_entered_data_will_be_missed))
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 findNavController().navigateUp()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
+    }
+
+    private fun setupSaveButton() {
+        binding.btnSaveExpense.setOnClickListener {
+            val currentDate = checkDate(selectedDate) ?: return@setOnClickListener
+            val currentDescription = checkDescription() ?: return@setOnClickListener
+            val currentAmount = checkAmount() ?: return@setOnClickListener
+            val currentCategory = checkCategory() ?: return@setOnClickListener
+
+            val currentExpense =
+                buildExpenseToSave(currentDescription, currentAmount, currentDate, currentCategory)
+            saveExpense(currentExpense)
+        }
+    }
+
+    private fun checkDate(currentDate: LocalDate?): LocalDate? {
+        if (currentDate == null)  binding.etDate.error = getString(R.string.pick_date)
+        return currentDate
+    }
+
+    private fun checkDescription(): String? {
+        val currentDescription: String =  binding.etDescription.text.toString()
+        if (currentDescription.isBlank()) {
+            binding.etDescription.error = getString(R.string.enter_description)
+            return null
+        }
+        return currentDescription
+    }
+
+    private fun checkAmount(): Int? {
+        val currentAmount =  binding.etAmount.text.toString().toIntOrNull()
+        if (currentAmount == null)  binding.etAmount.error = getString(R.string.enter_valid_amount)
+        return currentAmount
+    }
+
+    private fun checkCategory(): ExpenseCategory? {
+        if ( binding.spinnerCategory.selectedItem == null) {
+            Toast.makeText(requireContext(),
+                getString(R.string.select_category), Toast.LENGTH_SHORT).show()
+        }
+        return  binding.spinnerCategory.selectedItem as? ExpenseCategory
+    }
+
+    private fun buildExpenseToSave(
+        description: String,
+        amount: Int,
+        currentDate: LocalDate,
+        category: ExpenseCategory
+    ): Expense {
+        return Expense(amount, description, currentDate, category)
+    }
+
+    private fun saveExpense(expense: Expense) {
+        val expenseViewModel = (requireActivity() as MainActivity).expenseViewModel
+        expenseViewModel.addExpense(expense)
+        Toast.makeText(requireContext(),
+            getString(R.string.expense_successfully_added), Toast.LENGTH_SHORT).show()
+        findNavController().navigateUp()
     }
 }
 
-private fun checkIfAnyDataInserted(amount: String, dateText: String, description: String)
-        : Boolean {
-    return (amount.isNotBlank() || dateText.isNotBlank() || description.isNotBlank())
-}
+
+
+
+
+
 

@@ -1,6 +1,5 @@
 package com.example.dailyexpensetracker
 
-
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,8 +11,6 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 
-
-
 object NotificationSender {
 
     private const val CHANNEL_ID = "EverydayReminder"
@@ -21,12 +18,12 @@ object NotificationSender {
     private const val DAILY_REMINDER_NOTIFICATION_ID = 1
 
     @SuppressLint("NewApi")
-    private fun createNotificationChannel(notificationManager:NotificationManager) {
+    private fun createNotificationChannel(notificationManager: NotificationManager) {
         if (notificationManager.getNotificationChannel(CHANNEL_ID) != null) return
-        val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME,  NotificationManager.IMPORTANCE_HIGH)
+        val channel =
+            NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
         notificationManager.createNotificationChannel(channel)
     }
-
 
     private fun createNotificationBuilder(context: Context): NotificationCompat.Builder {
         val openAppIntent = Intent(context, MainActivity::class.java).also {
@@ -34,8 +31,12 @@ object NotificationSender {
             it.putExtra("open_add_expense", true)
         }
         val openAppPendingIntent =
-            PendingIntent.getActivity(context, 0, openAppIntent,  PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
+            PendingIntent.getActivity(
+                context,
+                0,
+                openAppIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
         val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.pig_app_icon)
@@ -49,8 +50,9 @@ object NotificationSender {
 
     @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.O)
-    fun sendReminder(context:Context) {
-        val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    fun sendReminder(context: Context) {
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         createNotificationChannel(notificationManager)
         val notificationBuilder = createNotificationBuilder(context)
         notificationManager.notify(DAILY_REMINDER_NOTIFICATION_ID, notificationBuilder.build())

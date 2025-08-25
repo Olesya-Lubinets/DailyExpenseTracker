@@ -4,30 +4,25 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-
+import com.github.doyaaaaaken.kotlincsv.dsl.csvWriter
 
 object SaverExpensesToFile {
 
     private var listOfExpenses = mutableListOf<Expense>()
-
 
     fun updateListOfExpenses(expenses: List<Expense>) {
         listOfExpenses = expenses.toMutableList()
     }
 
     private fun generateCSVFromData(): String {
-        val sb = StringBuilder()
-        sb.append("Date,Amount,Category,Description\n")
-        listOfExpenses.forEach {
-            sb.append("${it.date},")
-            sb.append("${it.amount},")
-            sb.append("${it.category.title},")
-            sb.append("${it.description},")
-            sb.append("\n")
-        }
-        return sb.toString()
+        return csvWriter().writeAllAsString(
+            listOf(
+                listOf("Date", "Amount", "Category", "Description")
+            ) + listOfExpenses.map {
+                listOf(it.date.toString(), it.amount.toString(), it.category.title, it.description)
+            }
+        )
     }
-
 
     fun saveDataToCSV(context: Context, uri: Uri) {
         val dataInString: String = generateCSVFromData()
@@ -38,17 +33,13 @@ object SaverExpensesToFile {
         } ?: Toast.makeText(context, "Expenses NOT saved to CSV", Toast.LENGTH_LONG).show()
     }
 
-
     fun shareFile(context: Context, pathToFile: Uri) {
         val intent = Intent().apply {
             action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_STREAM, pathToFile)
-            //addCategory(Intent.CATEGORY_APP_MESSAGING)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            //addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             type = "text/csv"
         }
         context.startActivity(Intent.createChooser(intent, "Send via ..."))
     }
-
 }

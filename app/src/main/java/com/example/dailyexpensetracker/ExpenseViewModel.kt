@@ -6,7 +6,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
-
 class ExpenseViewModel(private val expenseDao: ExpenseDao) : ViewModel() {
     var expensesLiveData: LiveData<List<Expense>> = expenseDao.getAllExpenses().asLiveData()
 

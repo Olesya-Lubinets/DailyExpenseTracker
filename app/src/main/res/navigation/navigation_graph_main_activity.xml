@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph_main_activity"
     app:startDestination="@id/listFragment">
-
-
 
     <fragment
         android:id="@+id/listFragment"
@@ -28,7 +26,7 @@
         android:id="@+id/addExpenseFragment"
         android:name="com.example.dailyexpensetracker.AddExpenseFragment"
         android:label="fragment_add_expense"
-        tools:layout="@layout/fragment_add_expense" >
+        tools:layout="@layout/fragment_add_expense">
         <action
             android:id="@+id/action_addExpenseFragment_to_listFragment"
             app:destination="@id/listFragment" />

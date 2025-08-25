@@ -1,14 +1,13 @@
 package com.example.dailyexpensetracker
 
-
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
-private const val  KEY_NOTIFICATIONS = "notifications"
-private const val KEY_CURRENCY = "currency"
+const val  KEY_NOTIFICATIONS = "notifications"
+const val KEY_CURRENCY = "currency"
 
 class SettingsViewModel(application: Application): AndroidViewModel(application) {
 
@@ -24,6 +23,11 @@ class SettingsViewModel(application: Application): AndroidViewModel(application)
         val context = getApplication<Application>().applicationContext
         _notificationStatus.value =  appPreferences.getDataFromPreferences(context,KEY_NOTIFICATIONS,false)
         _currentCurrency.value = Currency.valueOf(appPreferences.getDataFromPreferences(context,KEY_CURRENCY,"EUR"))
+    }
+
+    fun getNotificationPreference(context: Context): Boolean {
+        val temp = appPreferences.getDataFromPreferences(context,KEY_NOTIFICATIONS,false)
+        return temp
     }
 
     fun setNotificationStatus(context: Context, enabled:Boolean) {

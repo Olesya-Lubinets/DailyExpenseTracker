@@ -8,24 +8,21 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 
-
-
-
-class  BootReceiver : BroadcastReceiver() {
+class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("BootReceiver", "Received intent: ${intent.action}")
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-            val notificationsEnabled = AppPreferences.getDataFromPreferences(context, "notifications", false)
-            if (notificationsEnabled) {
-                if (ContextCompat.checkSelfPermission(context, POST_NOTIFICATIONS) ==
-                        PackageManager.PERMISSION_GRANTED) {
-                    ReminderScheduler.scheduleDailyReminder(
-                        context,
-                        ReminderConfig.HOUR,
-                        ReminderConfig.MIN
-                    )
-                }
-            }
+            val notificationsEnabled =
+                AppPreferences.getDataFromPreferences(context, "notifications", false)
+            if (!notificationsEnabled) return
+            if (ContextCompat.checkSelfPermission(context, POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_DENIED
+            ) return
+            ReminderScheduler.scheduleDailyReminder(
+                context,
+                ReminderConfig.HOUR,
+                ReminderConfig.MIN
+            )
         }
     }
 }

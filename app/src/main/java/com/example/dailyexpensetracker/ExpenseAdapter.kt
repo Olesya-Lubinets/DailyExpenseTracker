@@ -1,5 +1,6 @@
 package com.example.dailyexpensetracker
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -10,14 +11,31 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
-class ExpenseAdapter(private var currency: Currency) : ListAdapter<Expense, ExpenseAdapter.ExpenseViewHolder>(DiffCallback()) {
+internal class ExpenseAdapter(private var currency: Currency) :
+    ListAdapter<Expense, ExpenseAdapter.ExpenseViewHolder>(DiffCallback()) {
 
     class ExpenseViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val ivCategoryIcon: ImageView = view.findViewById(R.id.ivCategoryIcon)
-        val tvDescription: TextView = view.findViewById(R.id.tvDescription)
-        val tvAmount: TextView = view.findViewById(R.id.tvAmount)
-        val tvDate: TextView = view.findViewById(R.id.tvDate)
-        val tvCategory: TextView = view.findViewById(R.id.tvCategory)
+        private val ivCategoryIcon: ImageView = view.findViewById(R.id.ivCategoryIcon)
+        private val tvDescription: TextView = view.findViewById(R.id.tvDescription)
+        private val tvAmount: TextView = view.findViewById(R.id.tvAmount)
+        private val tvDate: TextView = view.findViewById(R.id.tvDate)
+        private val tvCategory: TextView = view.findViewById(R.id.tvCategory)
+
+        fun bind(
+            expenseAmountString: String,
+            dateString: String,
+            description: String,
+            categoryTitle: String,
+            pathToIcon: Int
+        ) {
+            tvAmount.text = expenseAmountString
+            tvDate.text = dateString
+            tvDescription.text = description
+            tvCategory.text = categoryTitle
+            Glide.with(itemView.context)
+                .load(pathToIcon)
+                .into(ivCategoryIcon)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
@@ -28,24 +46,33 @@ class ExpenseAdapter(private var currency: Currency) : ListAdapter<Expense, Expe
 
     override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
         val expense = getItem(position)
-        holder.tvAmount.text = formatPrintAmount(expense.amount,currency)
-        holder.tvDate.text = expense.date.toString()
-        holder.tvDescription.text = expense.description
-        holder.tvCategory.text = expense.category.title
-        Glide.with(holder.itemView.context)
-            .load(expense.category.icon)
-            .into(holder.ivCategoryIcon)
+        val expenseAmountString = expense.amount.formatWithCurrency(currency)
+        val expenseDateString = expense.date.toString()
+        val expenseDescription = expense.description
+        val expenseCategoryTitle = expense.category.title
+        val pathToIcon = expense.category.icon
+
+        holder.bind(
+            expenseAmountString,
+            expenseDateString,
+            expenseDescription,
+            expenseCategoryTitle,
+            pathToIcon
+        )
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateCurrency(newCurrency: Currency) {
         currency = newCurrency
         notifyDataSetChanged()
     }
 
-
     class DiffCallback : DiffUtil.ItemCallback<Expense>() {
         override fun areItemsTheSame(oldItem: Expense, newItem: Expense) = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: Expense, newItem: Expense) = oldItem == newItem
+        override fun areContentsTheSame(oldItem: Expense, newItem: Expense): Boolean {
+            return (oldItem.date == newItem.date && oldItem.amount == newItem.amount && oldItem.description == newItem.description
+                    && oldItem.category == newItem.category)
+        }
     }
 }
 

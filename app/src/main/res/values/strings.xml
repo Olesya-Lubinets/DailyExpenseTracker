@@ -25,4 +25,26 @@
     <!-- Misc -->
     <string name="send_via">Send via ...</string>
 
+    <string name="current_currency">Current currency: %1$s</string>
+    <string name="notificationsON">Notifications are On</string>
+    <string name="notificationsOFF">Notifications are Off</string>
+
+    <!--Permissions-->
+    <string name="permission_required">"Notifications permission required</string>
+    <string name="permission_reason">This app needs permission to send you notifications.</string>
+    <string name="grant">Grant</string>
+    <string name="cancel">Cancel</string>
+    <string name="permission_granted">Notification permission granted</string>
+
+
+    <string name="expense_successfully_added">Expense successfully added</string>
+    <string name="enter_valid_amount">Enter a valid amount</string>
+    <string name="enter_description">Enter a description</string>
+    <string name="pick_date">Pick a date</string>
+    <string name="select_category">Select category</string>
+    <string name="sure">Are you sure?</string>
+    <string name="all_entered_data_will_be_missed">All entered data will be missed.</string>
+    <string name="yes">Yes</string>
+
+
 </resources>

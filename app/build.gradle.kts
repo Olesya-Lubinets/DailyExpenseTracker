@@ -28,6 +28,12 @@ android {
             )
         }
     }
+
+    buildFeatures{
+        viewBinding {
+            viewBinding = true
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -54,4 +60,5 @@ dependencies {
     implementation (libs.androidx.recyclerview)
     implementation(libs.androidx.room.ktx)
     kapt(libs.androidx.room.compiler)
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.7.0")
 }

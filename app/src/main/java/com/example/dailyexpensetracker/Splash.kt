@@ -6,22 +6,20 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 
-
 class Splash : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-        val place_for_pig = findViewById<ImageView>(R.id.placePig)
+        val placeForPig = findViewById<ImageView>(R.id.placePig)
 
         Glide.with(this)
             .asGif()
             .load(R.raw.money_pig)
-            .into(place_for_pig)
+            .into(placeForPig)
 
-        place_for_pig.postDelayed(
+        placeForPig.postDelayed(
             { startActivity(Intent(this, MainActivity::class.java)) },
             3000
         )
-
     }
 }

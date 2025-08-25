@@ -11,129 +11,140 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import com.example.dailyexpensetracker.databinding.FragmentSettingsBinding
 
 
 class SettingsFragment : Fragment() {
 
-    val notificationsPermissionLauncher =
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
+
+    private val notificationsPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
-                Toast.makeText(
-                    context,
-                    "Notification permission granted",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            if (!granted) return@registerForActivityResult
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.permission_granted),
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_settings, container, false)
+        _binding = FragmentSettingsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-
         super.onViewCreated(view, savedInstanceState)
-
 
         val settingsViewModel: SettingsViewModel by activityViewModels()
 
-        val currencySpinner = view.findViewById<Spinner>(R.id.currency_spinner)
-        val arrayOfCurrency = Currency.entries.map { it.name }.toTypedArray()
+        setupCurrencySpinner(view, settingsViewModel)
+        setupNotificationSwitcher(view, settingsViewModel)
+    }
 
+    private fun setupCurrencySpinner(view: View, settingsViewModel: SettingsViewModel) {
+        val currencyNames = Currency.entries.map { it.name }.toTypedArray()
 
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, arrayOfCurrency)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        currencySpinner.adapter = adapter
+        binding.currencySpinner.adapter =getSpinnerAdapter(currencyNames)
 
         settingsViewModel.currentCurrency.observe(viewLifecycleOwner) { newCurrency ->
-            val position =
-                (currencySpinner.adapter as ArrayAdapter<String>).getPosition(newCurrency.name)
-            currencySpinner.setSelection(position)
+            val position = ( binding.currencySpinner.adapter as ArrayAdapter<String>)
+                .getPosition(newCurrency.name)
+            binding.currencySpinner.setSelection(position)
         }
 
-
-        currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val currency = Currency.valueOf(arrayOfCurrency[position])
-                Toast.makeText(requireContext(), "Current currency: $currency", Toast.LENGTH_SHORT)
-                    .show()
-                settingsViewModel.setCurrentCurrency(requireContext(), currency)
+        binding.currencySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                handleCurrencySelected(position, currencyNames, settingsViewModel)
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-        }
-
-        val notificationSwitcher = view.findViewById<Switch>(R.id.notification_switcher)
-
-        val isEnabled = AppPreferences.getDataFromPreferences(requireContext(),"notifications", false)
-        notificationSwitcher.isChecked = isEnabled
-
-        notificationSwitcher.setOnCheckedChangeListener { _, isChecked ->
-            val message = if (isChecked) "Notifications are on" else "Notifications are off"
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-            settingsViewModel.setNotificationStatus(requireContext(), isChecked)
-
-            if (isChecked) {
-                checkNotificationPermission()
-                if (ContextCompat.checkSelfPermission(requireContext(), POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                    ReminderScheduler.scheduleDailyReminder(
-                        requireContext(),
-                        ReminderConfig.HOUR,
-                        ReminderConfig.MIN
-                    )
-                }
-            } else {
-                ReminderScheduler.cancelReminder(requireContext())
-            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
-    fun  checkNotificationPermission() {
-        if (ContextCompat.checkSelfPermission(requireContext(), POST_NOTIFICATIONS) ==
-            PackageManager.PERMISSION_DENIED
-        ) {
-            when {
-                ActivityCompat.shouldShowRequestPermissionRationale(
-                    requireActivity(),
-                    POST_NOTIFICATIONS
-                ) -> {
-                    AlertDialog.Builder(context)
-                        .setTitle("Notifications permission required")
-                        .setMessage("This app needs permission to send you notifications.")
-                        .setPositiveButton("Grant") { _, _ ->
-                            notificationsPermissionLauncher
-                                .launch(POST_NOTIFICATIONS)
-                        }
-                        .setNegativeButton("Cancel", null)
-                        .show()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
-                }
+    private fun getSpinnerAdapter(arrayOfItems: Array<String>): ArrayAdapter<String> {
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, arrayOfItems)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        return adapter
+    }
 
-                else -> {
-                    notificationsPermissionLauncher.launch(POST_NOTIFICATIONS)
-                }
-            }
+    private fun handleCurrencySelected(position: Int, arrayOfCurrency: Array<String>, settingsViewModel: SettingsViewModel) {
+        val currency = Currency.valueOf(arrayOfCurrency[position])
+        Toast.makeText(requireContext(), getString(R.string.current_currency, currency), Toast.LENGTH_SHORT).show()
+        settingsViewModel.setCurrentCurrency(requireContext(), currency)
+    }
+
+    private fun setupNotificationSwitcher(view: View, settingsViewModel: SettingsViewModel) {
+        val isEnabled = settingsViewModel.getNotificationPreference(requireContext())
+        binding.notificationSwitcher.isChecked = isEnabled
+
+        binding.notificationSwitcher.setOnCheckedChangeListener { _, isChecked ->
+            handleNotificationToggle(isChecked, settingsViewModel)
         }
+    }
+
+    private fun handleNotificationToggle(isChecked: Boolean, settingsViewModel: SettingsViewModel) {
+        val message = if (isChecked) getString(R.string.notificationsON) else getString(R.string.notificationsOFF)
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        settingsViewModel.setNotificationStatus(requireContext(), isChecked)
+
+        if (!isChecked) {
+            ReminderScheduler.cancelReminder(requireContext())
+            return
+        }
+
+        checkAndAskNotificationPermission()
+        if (isNotificationPermissionGranted()) {
+            scheduleReminderForExactTime()
+        }
+    }
+
+    private fun isNotificationPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(requireContext(), POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun checkAndAskNotificationPermission() {
+        if (!isNotificationPermissionGranted()) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), POST_NOTIFICATIONS)) {
+                notificationsPermissionLauncher.launch(POST_NOTIFICATIONS)
+                return
+            }
+            showRequestPermissionRationale()
+        }
+    }
+
+    private fun showRequestPermissionRationale() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.permission_required))
+            .setMessage(getString(R.string.permission_reason))
+            .setPositiveButton(getString(R.string.grant)) { _, _ ->
+                notificationsPermissionLauncher.launch(POST_NOTIFICATIONS)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun scheduleReminderForExactTime() {
+        ReminderScheduler.scheduleDailyReminder(
+            requireContext(),
+            ReminderConfig.HOUR,
+            ReminderConfig.MIN
+        )
     }
 }
